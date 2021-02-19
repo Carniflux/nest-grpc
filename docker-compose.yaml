@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+  db:
+    image: postgres:13.2
+    environment:
+      POSTGRES_DB: users
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+    - ./pgdata:/var/lib/postgresql/data/
