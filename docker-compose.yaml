@@ -1,10 +1,36 @@
-version: "3.7"
+version: "3.8"
 services:
-  db:
+  api:
+    image: nest
+    build:
+      dockerfile: Dockerfile
+      context: .
+    depends_on:
+      - database
+    container_name: api
+    environment:
+      POSTGRES_HOST: database
+      NODE_ENV: development
+      PORT: 3000
+    ports:
+    - "8080:3000"
+    links:
+      - database
+    restart: always
+
+  database:
     image: postgres:13.2
+    container_name: postgres
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data/
+    ports:
+      - "3500:6432"
     environment:
       POSTGRES_DB: users
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    volumes:
-    - ./pgdata:/var/lib/postgresql/data/
+      PGDATA: /var/lib/postgresql/data/
+    restart: always
+
+
+

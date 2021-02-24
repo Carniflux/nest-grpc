@@ -2,3 +2,20 @@ syntax = "proto3";
 
 package user;
 
+service EditUser {
+  rpc updateUser (User) returns (response);
+//  rpc stream (Empty) returns (User);
+}
+
+message User {
+  int32 id = 1;
+  string name = 2;
+  string password = 3;
+  string email = 4;
+}
+
+message response {
+  int32 id = 1;
+  string status = 2;
+}
+message Empty {}
