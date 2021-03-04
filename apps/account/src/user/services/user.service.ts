@@ -4,6 +4,7 @@ import { UserEntity } from '../models/user.entity';
 import { Repository } from 'typeorm';
 import { User } from '../models/user.interface';
 import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class UserService {
@@ -12,11 +13,14 @@ export class UserService {
     private readonly userRepo: Repository<UserEntity>,
   ) {}
 
-  update(user: User): Observable<User> {
-    const newUser = new UserEntity();
-    newUser.name = user.name;
-    newUser.password = user.password;
-    newUser.email = user.email;
-    return from(this.userRepo.save(newUser));
+  update(user: User): Observable<any> {
+    return from(this.userRepo.update(user.id, user));
+  }
+
+  stream(userName: string): Observable<User> {
+    console.log(userName);
+    const find = (user_name: string) =>
+      from(this.userRepo.findOne({ name: user_name }));
+    return find(userName);
   }
 }
