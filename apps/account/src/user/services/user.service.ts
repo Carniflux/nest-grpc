@@ -17,10 +17,15 @@ export class UserService {
     return from(this.userRepo.update(user.id, user));
   }
 
-  stream(userName: string): Observable<User> {
+  stream(userName: string): Observable<UserEntity> {
     console.log(userName);
     const find = (user_name: string) =>
-      from(this.userRepo.findOne({ name: user_name }));
+      from(
+        this.userRepo.findOne({ where: { name: user_name } }).then((value) => {
+          return value;
+        }),
+      );
+
     return find(userName);
   }
 }
