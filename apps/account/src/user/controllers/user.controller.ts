@@ -14,6 +14,7 @@ export class UserController {
   @GrpcMethod('EditUser', 'updateUser')
   update(user: User) {
     this.userService.update(user);
+    this.stream(of({ name: user.name }));
   }
 
   @GrpcStreamMethod('EditUser', 'stream')
