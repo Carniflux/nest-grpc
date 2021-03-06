@@ -18,7 +18,6 @@ export class UserService {
   }
 
   stream(userName: string): Observable<UserEntity> {
-    console.log(userName);
     const find = (user_name: string) =>
       from(
         this.userRepo.findOne({ where: { name: user_name } }).then((value) => {
