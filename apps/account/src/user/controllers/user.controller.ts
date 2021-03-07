@@ -2,10 +2,11 @@ import { Controller } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
 import { User } from '../models/user.interface';
-import { Observable, of, Subject } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { UserByName } from '@account/user/models/user-by-name.interface';
 import { UserDto } from '@account/user/models/user.dto';
 import { map, mergeMap } from 'rxjs/operators';
+import { UserNameDto } from '@account/user/models/user.nameDto';
 
 @Controller()
 export class UserController {
@@ -20,10 +21,9 @@ export class UserController {
   @GrpcStreamMethod('EditUser', 'stream')
   stream(message$: Observable<UserByName>): Observable<UserDto> {
     const userDto = new UserDto();
-    const user$ = of(userDto);
-    const result = user$.pipe(
-      mergeMap(() =>
-        message$.pipe(
+    const user$ = of(message$).pipe(
+      mergeMap((mess) =>
+        mess.pipe(
           mergeMap((userName) =>
             this.userService.stream(userName.name).pipe(
               map((userEn) => {
@@ -38,7 +38,6 @@ export class UserController {
         ),
       ),
     );
-    result.subscribe();
-    return result;
+    return user$;
   }
 }
