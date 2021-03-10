@@ -6,10 +6,12 @@ import {
 } from 'typeorm';
 import { UserEntity } from '@account/user/models/user.entity';
 import { Subscriber } from 'rxjs';
+import { UserDto } from '@account/user/models/user.dto';
 
 @EventSubscriber()
 export class UserSubscriber implements EntitySubscriberInterface<UserEntity> {
   subscriber: Subscriber<UserEntity>[] = [];
+  userDto = new UserDto();
 
   constructor(connection: Connection) {
     connection.subscribers.push(this);
@@ -19,12 +21,19 @@ export class UserSubscriber implements EntitySubscriberInterface<UserEntity> {
     return UserEntity;
   }
 
-  afterUpdate(event: UpdateEvent<UserEntity>) {
-    console.log(`AFTER ENTITY LOADED: `, event.entity);
+  afterUpdate(event: UpdateEvent<UserEntity>): Promise<any> | void {
+    event.connection
+      .getRepository(UserEntity)
+      .createQueryBuilder('user')
+      .where('user.id = :id', { id: this.userDto.id })
+      .getOne()
+      .then((user) => {
+        this.subscriber.map((value) => value.next(user));
+      });
   }
 
-  beforeUpdate(event: UpdateEvent<UserEntity>): Promise<any> | void {
-    this.subscriber.map((value) => value.next(event.entity));
+  beforeUpdate(event: UpdateEvent<UserEntity>) {
+    this.userDto.id = event.entity.id;
   }
 
   addSubscriber(subs: Subscriber<UserEntity>) {

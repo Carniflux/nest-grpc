@@ -4,7 +4,7 @@ import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
 import { User } from '../models/user.interface';
 import { Observable, of, Subject } from 'rxjs';
 import { UserDto } from '@account/user/models/user.dto';
-import { map, mergeMap } from 'rxjs/operators';
+import { filter, map, mergeMap } from 'rxjs/operators';
 import { UserSubscriber } from '@account/user/services/user.subscriber';
 
 @Controller()
@@ -31,7 +31,7 @@ export class UserController {
       mergeMap((obs) =>
         obs.pipe(
           mergeMap((user) =>
-            this.userService.stream(user.name).pipe(
+            this.userService.stream(user.id).pipe(
               map((userEn) => {
                 const userDto = new UserDto();
                 userDto.id = userEn.id;

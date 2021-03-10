@@ -4,7 +4,7 @@ package user;
 
 service EditUser {
   rpc updateUser (UserDto) returns (Empty);
-  rpc stream (stream UserName) returns (stream UserDto);
+  rpc stream (stream UserId) returns (stream UserDto);
 }
 
 message UserDto {
@@ -16,6 +16,6 @@ message UserDto {
 
 message Empty {}
 
-message UserName {
-  string name = 1;
+message UserId {
+  int32 id = 1;
 }

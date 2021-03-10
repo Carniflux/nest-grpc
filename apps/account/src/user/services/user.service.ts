@@ -17,7 +17,7 @@ export class UserService {
     return of(user);
   }
 
-  stream(userName: string): Observable<UserEntity> {
-    return from(this.userRepo.findOne({ where: { name: userName } }));
+  stream(userId: number): Observable<UserEntity> {
+    return from(this.userRepo.findOne({ where: { id: userId } }));
   }
 }
