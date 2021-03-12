@@ -22,10 +22,14 @@ export class UserController {
 
   @GrpcStreamMethod('EditUser', 'stream')
   stream(message$: Observable<User>): Observable<UserDto> {
+    const userDto = new UserDto();
     const user$ = new Subject<UserDto>();
     const sub$ = new Observable<UserDto>((subscriber) => {
       this.userSubscriber.addSubscriber(subscriber);
-    }).pipe(map((user) => user$.next(user)));
+      message$.pipe(map((userId) => (userDto.id = userId.id)));
+    }).pipe(
+      map((user) => user$.next(filter<UserDto>(() => user.id === userDto.id))),
+    );
 
     const getUser$ = of(message$).pipe(
       mergeMap((obs) =>
