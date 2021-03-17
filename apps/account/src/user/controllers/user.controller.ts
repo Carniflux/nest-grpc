@@ -1,7 +1,6 @@
 import { Controller, Inject } from '@nestjs/common';
 import { UserService } from '../services/user.service';
 import { GrpcMethod } from '@nestjs/microservices';
-import { User } from '../models/user.interface';
 import { Observable, Subject } from 'rxjs';
 import { UserDto } from '@account/user/models/user.dto';
 import { map } from 'rxjs/operators';
@@ -16,12 +15,12 @@ export class UserController {
   ) {}
 
   @GrpcMethod('EditUser', 'updateUser')
-  update(user: User) {
-    this.userService.update(user);
+  update(dto: UserDto) {
+    this.userService.update(dto);
   }
 
   @GrpcMethod('EditUser', 'stream')
-  stream({ id }: User): Observable<UserDto> {
+  stream({ id }: UserDto): Observable<UserDto> {
     const user$ = new Subject<UserDto>();
     const sub$ = new Observable<UserDto>((subscriber) => {
       this.userSubscriber.addSubscriber(subscriber);
@@ -33,18 +32,12 @@ export class UserController {
       }),
     );
 
-    const getUser$ = this.userService.stream(id).pipe(
-      map((userEn) => {
-        const userDto = new UserDto();
-        userDto.id = userEn.id;
-        userDto.name = userEn.name;
-        userDto.password = userEn.password;
-        userDto.email = userEn.email;
-        user$.next(userDto);
-      }),
-    );
+    const getUser$ = this.userService
+      .stream(id)
+      .pipe(map((userEn) => user$.next(userEn)));
     getUser$.subscribe();
     sub$.subscribe();
+    /* Течёт память */
     return user$.asObservable();
   }
 }

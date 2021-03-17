@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../models/user.entity';
 import { Repository } from 'typeorm';
-import { User } from '../models/user.interface';
 import { from, Observable, of } from 'rxjs';
+import { UserDto } from '@account/user/models/user.dto';
 
 @Injectable()
 export class UserService {
@@ -12,9 +12,8 @@ export class UserService {
     private userRepo: Repository<UserEntity>,
   ) {}
 
-  update(user: User): Observable<User> {
+  update(user: UserDto) {
     from(this.userRepo.update(user.id, user));
-    return of(user);
   }
 
   stream(userId: number): Observable<UserEntity> {

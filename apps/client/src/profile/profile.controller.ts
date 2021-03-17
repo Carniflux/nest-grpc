@@ -1,19 +1,11 @@
-import {
-  Controller,
-  Get,
-  Inject,
-  OnModuleInit,
-  Param,
-  Put,
-} from '@nestjs/common';
+import { Body, Controller, Inject, OnModuleInit, Post } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
-import { User } from '@account/user/models/user.interface';
 import { UserDto } from '@account/user/models/user.dto';
 
 interface UserServiceI {
-  findUser(user: User): Observable<UserDto>;
-  updateUser(user: User);
+  findUser(userDto: UserDto): Observable<UserDto>;
+  updateUser(user: UserDto);
 }
 
 @Controller('profile')
@@ -26,10 +18,10 @@ export class ProfileController implements OnModuleInit {
     this.userService = this.client.getService<UserServiceI>('EditUser');
   }
 
-  @Get(':id')
-  getUser(@Param('id') id: number): Observable<UserDto> {
-    console.log(id);
-    return this.userService.findUser({ id: id });
+  @Post('updateUser')
+  getUser(@Body() user: UserDto) {
+    console.log(user);
+    this.userService.updateUser(user);
   }
 
   // @Put('editUser')

@@ -1,7 +1,7 @@
 export class UserDto {
   id?: number;
 
-  name: string;
+  name?: string;
 
   password?: string;
 
